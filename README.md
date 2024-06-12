@@ -25,13 +25,13 @@ steps:
       java-version: '11'
       distribution: 'temurin'
 
-  # Setup netbeans distribution directory on github workspace.
+  # Setup autopsy distribution directory on github workspace.
   - uses: cjmach/setup-autopsy-action@v1
     name: Setup Autopsy distribution
     with:
       version: '4.20.0'
 
-  # Run the ant command, with the required NetBeans properties set.
+  # Run the ant command, with the required Autopsy properties set.
   - name: Run the Ant build target
     run: >-
       ant -noinput -buildfile build.xml
