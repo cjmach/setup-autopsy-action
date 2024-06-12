@@ -1,0 +1,43 @@
+name: Setup Sleuthkit Autopsy
+description: Download and extract an Autopsy ZIP distribution
+author: Carlos Machado
+branding:
+  icon: download
+  color: orange
+inputs:
+  version:
+    description: Autopsy version
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup environment
+      id: sleuthenv
+      shell: bash
+      run: |
+        echo "AUTOPSY_VERSION=${{ inputs.version }}" >> "${GITHUB_OUTPUT}"
+    - name: Cache Autopsy distribution
+      uses: actions/cache@v4
+      id: cache-autopsy
+      with:
+        path: ${{ github.workspace }}/autopsy
+        key: ${{ runner.os }}-autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}
+        restore-keys: |
+          ${{ runner.os }}-autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}
+          ${{ runner.os }}-autopsy-
+          ${{ runner.os }}-
+    
+    - name: Download and extract Autopsy ${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }} ZIP distribution
+      shell: bash
+      run: |
+        if [ "${{ steps.cache-autopsy.outputs.cache-hit }}" = "true" ]; then
+          echo "Cache hit - skipping Autopsy ZIP distribution download"
+        else
+          wget -q https://sleuthkit.org/carrier.asc
+          wget -q https://github.com/sleuthkit/autopsy/releases/download/autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}/autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}.zip.asc
+          wget -q https://github.com/sleuthkit/autopsy/releases/download/autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}/autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}.zip
+          gpg --dearmor carrier.asc
+          gpg --no-default-keyring --keyring ${{ github.workspace }}/carrier.asc.gpg --verify autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}.zip.asc autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}.zip
+          unzip -q autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }}.zip
+          mv autopsy-${{ steps.sleuthenv.outputs.AUTOPSY_VERSION }} autopsy
+        fi
