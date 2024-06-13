@@ -25,17 +25,28 @@ steps:
       java-version: '11'
       distribution: 'temurin'
 
+  # Setup NetBeans distribution directory on github workspace.
+  - uses: cjmach/setup-netbeans-action@v2.1
+    name: Setup Autopsy distribution
+    with:
+      version: '15'
+
   # Setup autopsy distribution directory on github workspace.
   - uses: cjmach/setup-autopsy-action@v1
     name: Setup Autopsy distribution
     with:
-      version: '4.20.0'
+      version: '4.21.0'
 
   # Run the ant command, with the required Autopsy properties set.
   - name: Run the Ant build target
     run: >-
       ant -noinput -buildfile build.xml
-      -Dnbplatform.default.netbeans.dest.dir=${{ github.workspace }}/autopsy
-      -Dnbplatform.default.harness.dir=${{ github.workspace }}/autopsy/harness
+      -Dnbplatform.Autopsy_4.21.0.netbeans.dest.dir=${{ github.workspace }}/autopsy
+      -Dnbplatform.Autopsy_4.21.0.harness.dir=${{ github.workspace }}/autopsy/harness
       build
 ```
+
+The term "Autopsy_4.21.0" in the Autopsy properties on the ant command 
+line represents the name of the NetBeans platform and must match the value 
+of the property `nbplatform.active` set in the file `nbproject/platform.properties`
+of your module (suite).
