@@ -42,7 +42,7 @@ steps:
     run: >-
       ant -noinput -buildfile build.xml
       -Dnbplatform.Autopsy_4.21.0.netbeans.dest.dir=${{ github.workspace }}/autopsy
-      -Dnbplatform.Autopsy_4.21.0.harness.dir=${{ github.workspace }}/autopsy/harness
+      -Dnbplatform.Autopsy_4.21.0.harness.dir=${{ github.workspace }}/netbeans/harness
       build
 ```
 
